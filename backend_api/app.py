@@ -15,10 +15,10 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # Lấy mật khẩu từ biến môi trường (an toàn hơn) hoặc hardcode
 # Để an toàn, bạn nên set biến môi trường: set DB_PASSWORD=your_password
 DB_USERNAME = "postgres"
-DB_PASSWORD = os.environ.get('DB_PASSWORD', '123456') # <<< THAY MẬT KHẨU CỦA BẠN VÀO ĐÂY
-DB_HOST = "localhost"
+DB_PASSWORD = os.environ.get('DB_PASSWORD', '123456')
+DB_HOST = "db.rrfonraxfittnyhoekwt.supabase.co"
 DB_PORT = "5432"
-DB_NAME = "weather_project" # <<< ĐẢM BẢO ĐÂY LÀ DB BẠN ĐANG DÙNG
+DB_NAME = "postgres"
 
 DATABASE_URI = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 

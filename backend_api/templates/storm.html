@@ -11,27 +11,38 @@
     
     <div class="mt-4 p-4 bg-[#AFD7E0] dark:bg-gray-700 border border-[#E6F0FA] dark:border-gray-600 text-gray-800 dark:text-white rounded-lg animate-slide-up">
         <h3 class="font-bold text-lg mb-2">Ghi chú Phát triển</h3>
-        <p>Bản đồ này đang hiển thị dữ liệu từ <strong>/api/storm_track</strong>. 
-        <br>Hiện tại API này đang gọi mô hình ML ví dụ (LinearRegression) và trả về dữ liệu bão giả.
+        <p>Bản đồ này hiển thị dữ liệu từ <strong>/api/storm_track</strong>. 
+        <br>Hiện tại dùng anomaly detection + LinearRegression và dữ liệu giả.
         </p>
     </div>
 </section>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        if (typeof initStormMap === 'function') {
-            initStormMap();
-        }
+        initStormMap();
     });
+
     function initStormMap() {
         const map = L.map('map-container').setView([10.7769, 106.7009], 5);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
         }).addTo(map);
-        L.marker([12.0, 109.0]).addTo(map).bindPopup('<b>Vị trí bão</b><br>Cấp 8').openPopup();
-        L.polyline([[12.0, 109.0], [13.0, 110.0]], {color: '#FADBD8', dashArray: '5, 5', weight: 3}).addTo(map);
+
+        fetch('/api/storm_track')
+            .then(res => res.json())
+            .then(data => {
+                if (data.no_storm) {
+                    L.marker([12.0, 109.0]).addTo(map).bindPopup(data.message).openPopup();
+                } else {
+                    L.polyline(data.track.coordinates, {color: '#FADBD8', dashArray: '5, 5', weight: 3}).addTo(map);
+                    L.marker(data.center).addTo(map).bindPopup(`Tâm bão<br>Cảnh báo: ${data.warning}<br>Đi vào đất liền: ${data.landfall_vn ? 'Có' : 'Không'}`).openPopup();
+                }
+            })
+            .catch(err => console.error(err));
     }
 </script>
 {% endblock %}

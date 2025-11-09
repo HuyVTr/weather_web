@@ -5,6 +5,7 @@
 import joblib
 import os
 import pandas as pd
+import numpy as np
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models/storm_model.pkl')
 ml_model = None
@@ -26,7 +27,7 @@ def load_model():
 
 def predict_storm(input_data):
     """
-    Nhận dữ liệu đầu vào (ví dụ: 1 hàng pandas) và trả về dự đoán.
+    Nhận dữ liệu đầu vào (ví dụ: 1 hàng pandas) và trả về dự đoán 24h.
     LƯU Ý: Đây là hàm VÍ DỤ. Dữ liệu đầu vào và đầu ra
     cần khớp với mô hình bạn huấn luyện (ví dụ: LinearRegression)
     """
@@ -35,16 +36,18 @@ def predict_storm(input_data):
             return {"error": "Mô hình không khả dụng"}
 
     try:
-        # Ví dụ: input_data là 1 DataFrame có 1 dòng
-        # input_data = pd.DataFrame([[25.0, 1012.0, 5.0]], 
-        #                           columns=['temp_lag1', 'pressure_lag1', 'wind_lag1'])
+        # Extend to predict 24h (simple extrapolation)
+        predictions = []
+        current_input = input_data.copy()
+        for _ in range(24):
+            pred = ml_model.predict(current_input)[0]
+            predictions.append(pred)
+            # Shift input for next hour (simplified)
+            current_input.iloc[0, 0] = pred  # Update temp_lag1
+            current_input.iloc[0, 1] = current_input.iloc[0, 1] * 0.99  # Pressure decay
+            current_input.iloc[0, 2] = current_input.iloc[0, 2] * 1.01  # Wind increase
         
-        prediction = ml_model.predict(input_data)
-        
-        # Xử lý kết quả dự đoán
-        # (Ví dụ: Trả về nhiệt độ dự đoán)
-        return {"predicted_temperature": prediction[0]}
-        
+        return {"predicted_temperature": predictions}
     except Exception as e:
         return {"error": f"Lỗi khi dự đoán: {e}"}
 

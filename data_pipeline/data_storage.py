@@ -7,11 +7,11 @@ import traceback
 # --- CẤU HÌNH DATABASE ---
 # Cần được thay đổi cho phù hợp
 DB_CONFIG = {
-    "dbname": "weather_project",
+    "host": "db.rrfonraxfittnyhoekwt.supabase.co",
+    "port": 5432,
+    "dbname": "postgres",
     "user": "postgres",
-    "password": "123456", # !!! Đảm bảo mật khẩu đúng
-    "host": "localhost",
-    "port": "5432"
+    "password": "123456" 
 }
 
 def connect_to_db():

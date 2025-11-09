@@ -1,104 +1,262 @@
 {% extends "layout.html" %}
 {% block title %}Trang chủ - Dự báo Thời tiết{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+    .hero-section {
+        background: linear-gradient(to bottom, #38bdf8, #7dd3fc, #bae6fd);
+        min-height: 500px;
+        position: relative;
+    }
+    
+    .weather-card-main {
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: slideUp 0.8s ease-out;
+    }
+    
+    .weather-card-main:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .city-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        animation: popIn 0.6s ease-out;
+    }
+    
+    .city-card:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .city-card.blue {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    }
+    
+    .city-card.orange {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    }
+    
+    .city-card.green {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    }
+    
+    .city-card.purple {
+        background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
+    }
+    
+    .search-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .search-container:focus-within {
+        box-shadow: 0 8px 30px rgba(56, 189, 248, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .current-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 1rem;
+    }
+    
+    .detail-card {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .detail-icon {
+        width: 32px;
+        height: 32px;
+        margin: 0 auto 0.5rem;
+    }
+    
+    .detail-value {
+        font-weight: 600;
+    }
+    
+    .detail-label {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+    
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    @keyframes popIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Hero Section -->
-<section class="text-center py-16">
-    <h1 class="text-4xl md:text-5xl font-bold text-blue-600 mb-4">Thời tiết Việt Nam</h1>
-    <p class="text-lg text-gray-700 mb-6 max-w-xl mx-auto">Cập nhật thông tin thời tiết chính xác và dự báo đáng tin cậy.</p>
+<section class="hero-section py-16 text-center relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white/20 dark:to-gray-900/20"></div>
+    <div class="container mx-auto px-4 relative">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">Thời tiết Việt Nam</h1>
+        <p class="text-lg text-white/90 mb-8 max-w-xl mx-auto drop-shadow-md">Cập nhật thông tin thời tiết chính xác và dự báo đáng tin cậy cho mọi tỉnh thành.</p>
 
-    <!-- Card thời tiết hiện tại -->
-    <div class="bg-white rounded-xl shadow-lg p-6 max-w-md mx-auto mb-6 transform hover:scale-105 transition-transform duration-300">
-        <div class="flex justify-between items-center">
-            <div>
-                <h2 class="text-2xl font-bold">Hà Nội</h2>
-                <p class="text-sm text-gray-500">Chủ Nhật, 02/11/2025 • 18:41</p>
-                <p class="text-4xl font-bold mt-2">28°C</p>
-                <p class="text-gray-600">Nắng ít mây</p>
+        <!-- User Weather Card -->
+        <div id="user-weather-card" class="weather-card-main p-6 max-w-md mx-auto mb-8 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 id="user-province" class="text-2xl font-bold text-blue-900 dark:text-blue-100"></h2>
+                    <p id="user-time" class="text-sm text-blue-600 dark:text-blue-300"></p>
+                </div>
+                <i data-lucide="sun" class="w-12 h-12 text-yellow-500"></i>
             </div>
-            <div class="text-right">
-                <i data-lucide="sun" class="w-16 h-16 text-yellow-500"></i>
-                <p class="text-sm text-gray-500 mt-2">Độ ẩm 65% • Gió 12km/h</p>
+            <p class="text-4xl font-bold text-blue-900 dark:text-blue-100 mb-2" id="user-avg-temp"></p>
+            <p class="text-blue-600 dark:text-blue-300 mb-4">Nắng ít mây</p>
+            <div class="current-details">
+                <div class="detail-card">
+                    <i data-lucide="droplet" class="detail-icon text-blue-500"></i>
+                    <p class="detail-value" id="user-humidity"></p>
+                    <p class="detail-label">Độ ẩm</p>
+                </div>
+                <div class="detail-card">
+                    <i data-lucide="wind" class="detail-icon text-blue-500"></i>
+                    <p class="detail-value" id="user-wind">12 km/h</p>
+                    <p class="detail-label">Gió</p>
+                </div>
+                <div class="detail-card">
+                    <i data-lucide="cloud-rain" class="detail-icon text-blue-500"></i>
+                    <p class="detail-value" id="user-precipitation"></p>
+                    <p class="detail-label">Mưa</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Search Bar -->
-    <div class="max-w-md mx-auto mb-8">
-        <form class="flex bg-white rounded-lg shadow-md overflow-hidden">
-            <input type="text" placeholder="Nhập thành phố..." class="flex-1 p-3 border-r border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-3 hover:bg-blue-600 transition-colors">
-                <i data-lucide="search" class="w-5 h-5"></i>
-            </button>
-        </form>
-    </div>
-</section>
+        <!-- Default Weather Card -->
+        <div id="default-weather-card" class="weather-card-main p-6 max-w-md mx-auto mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-blue-900 dark:text-blue-100">Hà Nội</h2>
+                    <p class="text-sm text-blue-600 dark:text-blue-300">Thứ Ba, 04/11/2025 • 20:32</p>
+                </div>
+                <i data-lucide="sun" class="w-12 h-12 text-yellow-500"></i>
+            </div>
+            <p class="text-4xl font-bold text-blue-900 dark:text-blue-100 mb-2">28°C</p>
+            <p class="text-blue-600 dark:text-blue-300 mb-4">Nắng ít mây</p>
+            <div class="current-details">
+                <div class="detail-card">
+                    <i data-lucide="droplet" class="detail-icon text-blue-500"></i>
+                    <p class="detail-value">65%</p>
+                    <p class="detail-label">Độ ẩm</p>
+                </div>
+                <div class="detail-card">
+                    <i data-lucide="wind" class="detail-icon text-blue-500"></i>
+                    <p class="detail-value">12 km/h</p>
+                    <p class="detail-label">Gió</p>
+                </div>
+                <div class="detail-card">
+                    <i data-lucide="cloud-rain" class="detail-icon text-blue-500"></i>
+                    <p class="detail-value">0 mm</p>
+                    <p class="detail-label">Mưa</p>
+                </div>
+            </div>
+        </div>
 
-<!-- Dự báo 7 ngày -->
-<section class="py-10">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Dự báo 7 ngày</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-4 max-w-6xl mx-auto">
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <p class="text-sm text-gray-500">03/11</p>
-            <i data-lucide="sun" class="w-10 h-10 text-yellow-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">25°C</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <p class="text-sm text-gray-500">04/11</p>
-            <i data-lucide="cloud" class="w-10 h-10 text-gray-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">24°C</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <p class="text-sm text-gray-500">05/11</p>
-            <i data-lucide="cloud-rain" class="w-10 h-10 text-blue-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">23°C</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <p class="text-sm text-gray-500">06/11</p>
-            <i data-lucide="sun" class="w-10 h-10 text-yellow-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">26°C</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <p class="text-sm text-gray-500">07/11</p>
-            <i data-lucide="cloud" class="w-10 h-10 text-gray-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">25°C</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <p class="text-sm text-gray-500">08/11</p>
-            <i data-lucide="cloud-rain" class="w-10 h-10 text-blue-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">24°C</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <p class="text-sm text-gray-500">09/11</p>
-            <i data-lucide="sun" class="w-10 h-10 text-yellow-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">27°C</p>
+        <!-- Search Bar -->
+        <div class="max-w-md mx-auto mb-12">
+            <form action="/forecast" class="search-container flex rounded-lg overflow-hidden">
+                <input type="text" name="province" placeholder="Tìm tỉnh thành..." class="flex-1 p-3 text-blue-900 dark:text-blue-100 bg-transparent focus:outline-none">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-3 hover:bg-blue-600 transition-colors duration-200">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </button>
+            </form>
         </div>
     </div>
 </section>
 
 <!-- Thành phố lớn -->
-<section class="py-10">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Thời tiết các thành phố lớn</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <h3 class="font-semibold">Hà Nội</h3>
-            <i data-lucide="sun" class="w-10 h-10 text-yellow-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">28°C</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <h3 class="font-semibold">TP. HCM</h3>
-            <i data-lucide="cloud" class="w-10 h-10 text-gray-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">31°C</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <h3 class="font-semibold">Đà Nẵng</h3>
-            <i data-lucide="cloud-drizzle" class="w-10 h-10 text-blue-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">26°C</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
-            <h3 class="font-semibold">Cần Thơ</h3>
-            <i data-lucide="cloud" class="w-10 h-10 text-gray-500 mx-auto mt-2"></i>
-            <p class="text-lg font-semibold mt-2">30°C</p>
+<section class="py-16 bg-white/50 dark:bg-gray-900/50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-blue-900 dark:text-blue-100 mb-8 text-center">Thời tiết các thành phố lớn</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="city-card blue p-6 rounded-xl" onclick="window.location.href='/forecast?province=Hà Nội'">
+                <h3 class="text-xl font-semibold mb-2">Hà Nội</h3>
+                <i data-lucide="sun" class="w-12 h-12 text-yellow-500 mx-auto mb-2"></i>
+                <p class="text-2xl font-bold">28°C</p>
+            </div>
+            <div class="city-card orange p-6 rounded-xl" onclick="window.location.href='/forecast?province=TP.HCM'">
+                <h3 class="text-xl font-semibold mb-2">TP. HCM</h3>
+                <i data-lucide="cloud" class="w-12 h-12 text-gray-500 mx-auto mb-2"></i>
+                <p class="text-2xl font-bold">31°C</p>
+            </div>
+            <div class="city-card green p-6 rounded-xl" onclick="window.location.href='/forecast?province=Đà Nẵng'">
+                <h3 class="text-xl font-semibold mb-2">Đà Nẵng</h3>
+                <i data-lucide="cloud-drizzle" class="w-12 h-12 text-blue-500 mx-auto mb-2"></i>
+                <p class="text-2xl font-bold">26°C</p>
+            </div>
+            <div class="city-card purple p-6 rounded-xl" onclick="window.location.href='/forecast?province=Cần Thơ'">
+                <h3 class="text-xl font-semibold mb-2">Cần Thơ</h3>
+                <i data-lucide="cloud" class="w-12 h-12 text-gray-500 mx-auto mb-2"></i>
+                <p class="text-2xl font-bold">30°C</p>
+            </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function getUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                
+                const geoResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`);
+                const geoData = await geoResponse.json();
+                const province = geoData.address?.state || 'Hà Nội';
+                
+                const weatherResponse = await fetch(`/api/current_weather?province=${province}`);
+                const weatherData = await weatherResponse.json();
+                
+                if (!weatherData.error) {
+                    document.getElementById('user-province').textContent = province;
+                    document.getElementById('user-time').textContent = 'Thứ Ba, 04/11/2025 • 20:32';
+                    document.getElementById('user-avg-temp').textContent = `${weatherData.avg_temp}°C`;
+                    document.getElementById('user-humidity').textContent = `Độ ẩm ${weatherData.avg_humidity}%`;
+                    document.getElementById('user-precipitation').textContent = `Mưa ${weatherData.precipitation}mm`;
+                    document.getElementById('user-weather-card').classList.remove('hidden');
+                    document.getElementById('default-weather-card').classList.add('hidden');
+                }
+            }, () => {
+                loadDefaultWeather('Hà Nội');
+            });
+        } else {
+            loadDefaultWeather('Hà Nội');
+        }
+    }
+    
+    async function loadDefaultWeather(province) {
+        const weatherResponse = await fetch(`/api/current_weather?province=${province}`);
+        const weatherData = await weatherResponse.json();
+        if (!weatherData.error) {
+            document.getElementById('user-province').textContent = province;
+            document.getElementById('user-time').textContent = 'Thứ Ba, 04/11/2025 • 20:32';
+            document.getElementById('user-avg-temp').textContent = `${weatherData.avg_temp}°C`;
+            document.getElementById('user-humidity').textContent = `Độ ẩm ${weatherData.avg_humidity}%`;
+            document.getElementById('user-precipitation').textContent = `Mưa ${weatherData.precipitation}mm`;
+            document.getElementById('user-weather-card').classList.remove('hidden');
+            document.getElementById('default-weather-card').classList.add('hidden');
+        }
+    }
+    
+    getUserLocation();
+</script>
 {% endblock %}

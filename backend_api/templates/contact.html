@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block title %}Liên hệ - WeatherVN{% endblock %}
+
+{% block content %}
+<section class="bg-gray-100 min-h-screen py-8">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800">Liên hệ với nhóm phát triển</h1>
+            <p class="text-gray-600 mt-2">Đồ án chuyên ngành Công nghệ thông tin - HUTECH</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            
+            <div class="lg:col-span-1 bg-gradient-to-br from-blue-800 to-blue-600 text-white rounded-lg shadow-lg p-8">
+                <h3 class="text-xl font-bold mb-6">Thông tin liên lạc</h3>
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <div>
+                            <p class="font-semibold">Địa chỉ trường:</p>
+                            <p class="text-blue-100 text-sm">Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, P. Hiệp Phú, TP. Thủ Đức, TP.HCM (HUTECH E Campus)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <div>
+                            <p class="font-semibold">Email nhóm:</p>
+                            <p class="text-blue-100 text-sm">pdthanh2004@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        <div>
+                            <p class="font-semibold">Hỗ trợ kỹ thuật:</p>
+                            <p class="text-blue-100 text-sm">0123 456 789</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white rounded-lg shadow-md border border-gray-200 p-8">
+                <form action="#" method="POST" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Họ tên</label>
+                            <input type="text" name="fullname" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 transition-colors" placeholder="Nhập họ tên...">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                            <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 transition-colors" placeholder="email@example.com">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Chủ đề góp ý</label>
+                        <select name="subject" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 bg-white">
+                            <option>Báo lỗi dự báo thời tiết</option>
+                            <option>Góp ý về tính năng Bão Biển Đông</option>
+                            <option>Góp ý giao diện</option>
+                            <option>Khác</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Nội dung</label>
+                        <textarea name="content" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 transition-colors" placeholder="Nhập nội dung phản hồi..."></textarea>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold py-2 px-6 rounded shadow-lg transform transition hover:-translate-y-0.5">
+                            Gửi phản hồi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

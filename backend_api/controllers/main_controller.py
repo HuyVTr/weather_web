@@ -58,3 +58,25 @@ def api_current_weather():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    # ... (các code cũ bên trên giữ nguyên)
+
+@main_bp.route('/about')
+def about():
+    """Trang Về chúng tôi"""
+    # nav_active='about' để highlight menu nếu cần
+    return render_template('about.html', nav_active='about')
+
+@main_bp.route('/contact')
+def contact():
+    """Trang Liên hệ"""
+    return render_template('contact.html', nav_active='contact')
+
+@main_bp.route('/privacy')
+def privacy():
+    """Trang Chính sách bảo mật"""
+    return render_template('privacy.html')
+
+@main_bp.route('/terms')
+def terms():
+    """Trang Điều khoản sử dụng"""
+    return render_template('terms.html')

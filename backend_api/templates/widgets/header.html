@@ -17,7 +17,11 @@
         <div class="hidden lg:flex space-x-10 text-white font-semibold">
             <a href="{{ url_for('main_bp.route_home') }}" class="nav-item">Trang chủ</a>
             <a href="{{ url_for('forecast_bp.route_forecast') }}" class="nav-item">Dự báo thời tiết</a>
-            <a href="{{ url_for('storm_bp.route_storm') }}" class="nav-item">Dự báo bão</a>
+            
+            <a href="http://127.0.0.1:8000/" class="nav-item">Bản đồ thời tiết</a>
+            
+            <a href="{{ url_for('chart_bp.route_chart') }}" class="nav-item">Biểu đồ</a>
+
             <a href="{{ url_for('main_bp.route_news') }}" class="nav-item">Tin tức</a>
         </div>
 
@@ -34,8 +38,12 @@
     <div id="mobile-menu" class="lg:hidden h-0 overflow-hidden transition-all duration-500 ease-in-out bg-gray-800/95 backdrop-blur-sm">
         <div class="container mx-auto px-4 py-4 space-y-2">
             <a href="{{ url_for('main_bp.route_home') }}" class="mobile-nav-item">Trang chủ</a>
-            <a href="{{ url_for('forecast_bp.route_forecast') }}" class="mobile-nav-item">Dự báo thời tiết</a>
-            <a href="{{ url_for('storm_bp.route_storm') }}" class="mobile-nav-item">Dự báo bão</a>
+            <a href="{{ url_for('forecast_bp.route_forecast') }}" class="mobile-nav-item">Bản đồ thời tiết</a>
+            
+            <a href="http://127.0.0.1:8000/" class="mobile-nav-item">Bản đồ thời tiết </a>
+
+            <a href="{{ url_for('chart_bp.route_chart') }}" class="mobile-nav-item">Biểu đồ</a>
+            
             <a href="{{ url_for('main_bp.route_news') }}" class="mobile-nav-item">Tin tức</a>
         </div>
     </div>
@@ -57,7 +65,6 @@
             left: 50%;
             width: 0;
             height: 3px; 
-            /* Màu gạch chân giữ nguyên xanh để tạo sự hài hòa với nền */
             background: linear-gradient(90deg, #60A5FA, #3B82F6); 
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             transform: translateX(-50%);
@@ -66,7 +73,6 @@
         }
 
         .nav-item:hover {
-            /* Đổi màu hover chữ menu thành vàng nhạt để nổi bật hơn */
             color: #FDE68A; /* yellow-200 */ 
             text-shadow: 0 0 10px rgba(253, 230, 138, 0.8); /* Text glow on hover */
         }
@@ -95,59 +101,59 @@
     </style>
 
     <script>
-        // ... (Giữ nguyên JavaScript) ...
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menu-toggle');
             const mobileMenu = document.getElementById('mobile-menu');
             const menuIconOpen = document.getElementById('menu-icon-open');
             const menuIconClose = document.getElementById('menu-icon-close');
 
-            menuToggle.addEventListener('click', () => {
-                const isMenuOpen = mobileMenu.classList.contains('menu-open');
+            if (menuToggle && mobileMenu) {
+                menuToggle.addEventListener('click', () => {
+                    const isMenuOpen = mobileMenu.classList.contains('menu-open');
 
-                if (isMenuOpen) {
-                    // Close menu
-                    mobileMenu.style.height = '0';
-                    mobileMenu.classList.remove('menu-open');
-                    
-                    // Icon transition: X to Burger
-                    menuIconClose.classList.remove('opacity-100');
-                    menuIconClose.classList.add('opacity-0');
-                    setTimeout(() => {
-                        menuIconClose.classList.add('absolute');
-                        menuIconOpen.classList.remove('absolute');
-                        menuIconOpen.classList.remove('opacity-0');
-                        menuIconOpen.classList.add('opacity-100');
-                    }, 150); // Delay to sync with opacity transition
-                } else {
-                    // Open menu
-                    // Set height dynamically based on content (or a fixed max-height)
-                    mobileMenu.style.height = mobileMenu.scrollHeight + 'px';
-                    mobileMenu.classList.add('menu-open');
+                    if (isMenuOpen) {
+                        // Close menu
+                        mobileMenu.style.height = '0';
+                        mobileMenu.classList.remove('menu-open');
+                        
+                        // Icon transition: X to Burger
+                        menuIconClose.classList.remove('opacity-100');
+                        menuIconClose.classList.add('opacity-0');
+                        setTimeout(() => {
+                            menuIconClose.classList.add('absolute');
+                            menuIconOpen.classList.remove('absolute');
+                            menuIconOpen.classList.remove('opacity-0');
+                            menuIconOpen.classList.add('opacity-100');
+                        }, 150); 
+                    } else {
+                        // Open menu
+                        mobileMenu.style.height = mobileMenu.scrollHeight + 'px';
+                        mobileMenu.classList.add('menu-open');
 
-                    // Icon transition: Burger to X
-                    menuIconOpen.classList.remove('opacity-100');
-                    menuIconOpen.classList.add('opacity-0');
-                    setTimeout(() => {
-                        menuIconOpen.classList.add('absolute');
-                        menuIconClose.classList.remove('absolute');
-                        menuIconClose.classList.remove('opacity-0');
-                        menuIconClose.classList.add('opacity-100');
-                    }, 150);
-                }
-            });
-            
-            // Clean up height when window resizes to desktop view
-            window.addEventListener('resize', () => {
-                if (window.innerWidth >= 1024) {
-                    mobileMenu.style.height = '0';
-                    mobileMenu.classList.remove('menu-open');
-                    
-                    // Reset icon state if it was open
-                    menuIconOpen.classList.remove('absolute', 'opacity-0');
-                    menuIconClose.classList.add('absolute', 'opacity-0');
-                }
-            });
+                        // Icon transition: Burger to X
+                        menuIconOpen.classList.remove('opacity-100');
+                        menuIconOpen.classList.add('opacity-0');
+                        setTimeout(() => {
+                            menuIconOpen.classList.add('absolute');
+                            menuIconClose.classList.remove('absolute');
+                            menuIconClose.classList.remove('opacity-0');
+                            menuIconClose.classList.add('opacity-100');
+                        }, 150);
+                    }
+                });
+                
+                // Clean up height when window resizes to desktop view
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth >= 1024) {
+                        mobileMenu.style.height = '0';
+                        mobileMenu.classList.remove('menu-open');
+                        
+                        // Reset icon state if it was open
+                        menuIconOpen.classList.remove('absolute', 'opacity-0');
+                        menuIconClose.classList.add('absolute', 'opacity-0');
+                    }
+                });
+            }
         });
     </script>
 </header>

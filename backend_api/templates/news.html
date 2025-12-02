@@ -1,177 +1,333 @@
 {% extends "layout.html" %}
-{% block title %}Tin tức - Dự báo Thời tiết{% endblock %}
+{% block title %}Tin tức - Dự báo Thời tiết AI{% endblock %}
 
 {% block content %}
-<section class="bg-gray-100 min-h-screen py-8">
-    <div class="container mx-auto px-4">
+<div class="fixed inset-0 -z-10 h-full w-full bg-gradient-to-br from-blue-50 via-blue-100 to-purple-100 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 overflow-hidden">
+    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-blue-400/20 blur-3xl animate-blob"></div>
+    <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-purple-400/20 blur-3xl animate-blob animation-delay-2000"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-pink-400/20 blur-3xl animate-blob animation-delay-4000"></div>
+</div>
+
+<div class="min-h-screen container mx-auto px-4 py-8">
+    
+    <div class="text-center mb-12 animate-fade-in-up">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-sm font-semibold tracking-wide shadow-sm border border-blue-200 dark:border-blue-800 mb-4">
+            📰 Cập nhật 24/7
+        </span>
+        <h1 class="text-4xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 leading-tight drop-shadow-sm">
+            Tin Tức & Cảnh Báo <br> Thiên Tai
+        </h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div class="lg:col-span-2 space-y-8 animate-fade-in-up" style="animation-delay: 0.2s;">
             
-            <div class="lg:col-span-3 space-y-6">
-                
-                {% if news_list and news_list|length > 0 %}
-                {% set featured_item = news_list[0] %}
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-                    <div class="relative">
-                        <img src="{{ featured_item.image }}" alt="Ảnh {{ featured_item.title }}" class="w-full h-80 object-cover" loading="lazy">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-green-700 via-green-600 to-yellow-500 opacity-90 p-6 flex flex-col justify-end">
-                            <h2 class="text-4xl font-extrabold text-white">DỰ BÁO THỜI TIẾT</h2>
-                            <p class="text-xl font-semibold text-white mt-1">Ngày 13/06/2025</p> 
-                            <span class="text-xs text-green-800 bg-white rounded-full px-3 py-1 absolute bottom-6 right-6 shadow-lg font-medium">xemthoitiet.vn</span>
-                        </div>
-                    </div>
-                    
-                    <div class="p-5">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-2">{{ featured_item.title }}</h3>
-                        <p class="text-gray-600">Ngày 13 tháng 6 năm 2025, tình hình thời tiết tại Việt Nam đang có những diễn biến đáng chú...</p>
-                        <a href="#" class="text-green-600 font-medium hover:text-green-800 transition-colors mt-2 inline-block">Đọc chi tiết &rarr;</a>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                    {% for item in news_list[1:] %}
-                    <div class="flex bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                        <div class="flex-shrink-0 w-32 h-32 relative">
-                            <img src="{{ item.image }}" alt="Ảnh {{ item.title }}" class="w-full h-full object-cover" loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-br from-green-600 to-yellow-400 opacity-90 p-2 flex flex-col justify-end">
-                                <span class="text-sm font-bold text-white leading-tight">DỰ BÁO THỜI TIẾT</span>
-                                <span class="text-xs text-green-800 bg-white rounded px-1 mt-1 inline-block">Ngày {{ 12 - loop.index }}/06/2025</span>
-                            </div>
-                        </div>
-                        
-                        <div class="p-4 flex flex-col justify-center">
-                            <h4 class="text-base font-semibold text-gray-800 mb-1 hover:text-green-600 transition-colors">{{ item.title }}</h4>
-                            <p class="text-xs text-gray-500 line-clamp-2">Ngày {{ 12 - loop.index }} tháng 6 năm 2025, Việt Nam đang chịu tác động rõ rệt từ cơn bão...</p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                
-                {% else %}
-                <div class="bg-white p-8 rounded-lg text-center border border-gray-200">
-                    <p class="text-gray-500 text-lg">Hiện chưa có tin tức nào mới.</p>
-                </div>
-                {% endif %}
-                
-            </div>
-            
-            <div class="lg:col-span-1 space-y-6">
-                
-                <div class="bg-white rounded-lg shadow-md border border-gray-200 sticky top-4">
-                    <h3 class="text-xl font-bold text-gray-800 p-4 border-b border-gray-200">Bài viết mới</h3>
-                    <ul class="divide-y divide-gray-100">
-                        {% for item in news_list %}
-                        <li class="p-3 flex items-center space-x-3 hover:bg-gray-50 transition-colors">
-                            <div class="flex-shrink-0 w-16 h-12 relative rounded overflow-hidden">
-                                <img src="{{ item.image }}" alt="Ảnh {{ item.title }}" class="w-full h-full object-cover" loading="lazy">
-                                <div class="absolute inset-0 bg-gradient-to-br from-green-600 to-yellow-400 opacity-90"></div>
-                            </div>
-                            <a href="#" class="text-sm text-gray-700 font-medium hover:text-green-600 transition-colors">{{ item.title }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <div id="calendar-block" class="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-                    <div class="bg-green-600 text-white text-center py-2 font-bold text-lg rounded-t-lg -mx-4 -mt-4 mb-6">
-                        LỊCH VẠN SỰ THÁNG <span id="calendar-month-year"></span>
-                    </div>
-
-                    <div class="flex justify-center items-center space-x-4 text-4xl font-extrabold text-gray-800 mb-2">
-                        <span id="prev_date" class="prev_date cursor-pointer text-gray-400 hover:text-green-500 transition-colors"> ‹ </span> 
-                        <span id="calendar-day" class="text-green-600"> 16 </span>
-                        <span id="next_date" class="next_date cursor-pointer text-gray-400 hover:text-green-500 transition-colors"> › </span>
-                    </div>
-                    
-                    <div class="text-center text-sm font-semibold text-red-500 mb-2">Ngày hắc đạo</div>
-                    
-                    <div class="text-xs text-gray-600 mb-4 text-center">
-                        <span class="font-bold text-green-700">Giờ Hoàng Đạo:</span> Dần(3h - 5h), Mão(5h - 7h), <br>Tỵ(9h - 11h), Thân(15h - 17h), <br>Tuất(19h - 21h), Hợi(21h - 23h)
-                    </div>
-                    
-                    <div class="tt_ngay border-t border-gray-200 pt-3 text-sm">
-                        <table class="w-full" border="0" cellspacing="0" cellpadding="0">
-                            <tbody>
-                                <tr>
-                                    <td class="text-left font-semibold text-green-500" width="35%">
-                                        <div id="calendar-weekday">Chủ nhật</div>
-                                    </td>
-                                    <td class="text-center font-mono text-gray-800" width="30%">
-                                        <span id="calendar-time">20:19:30</span>
-                                    </td>
-                                    <td class="text-right font-semibold text-green-500" width="35%">
-                                        <div id="calendar-lunar-month">Tháng 9</div>
-                                        <div class="text-xs font-normal text-gray-500">Âm lịch</div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                        <div class="mt-3 grid grid-cols-3 items-center">
-                            <div class="text-xs text-gray-700">
-                                <span id="calendar-lunar-hour-day">Giờ Tuất<br>Ngày Kỷ Sửu<br>Tháng Bính Tuất</span>
-                            </div>
-                            <div class="text-center">
-                                <div class="w-8 h-8 mx-auto bg-contain bg-center bg-gray-300 rounded-full"></div> 
-                            </div>
-                            <div class="text-right">
-                                <div id="calendar-lunar-day" class="text-3xl font-extrabold text-green-600 leading-none">27</div>
-                                <div id="calendar-lunar-year" class="text-xs font-normal text-gray-500">Năm Ất Tỵ</div>
-                            </div>
-                        </div>
-                    </div>
+            <div id="featured-news" class="relative group cursor-pointer">
+                <div class="bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/60 dark:border-gray-600/60 rounded-[2rem] p-8 shadow-2xl h-96 flex items-center justify-center">
+                    <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
                 </div>
             </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="news-grid">
+                </div>
             
         </div>
-    </div>
-</section>
+        
+        <div class="lg:col-span-1 space-y-8 animate-fade-in-up" style="animation-delay: 0.4s;">
+            
+            <div id="calendar-block" class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-[2rem] shadow-lg border border-white/50 dark:border-gray-700 p-6 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-green-400/20 rounded-full blur-2xl"></div>
 
-<script>
-    // Khối JS này giúp Lịch Vạn Sự tự động hiển thị ngày/giờ hiện tại.
-    // Lưu ý: Việc tính toán Lịch Âm chính xác cần API hoặc thư viện phức tạp. 
-    // Dữ liệu Âm lịch dưới đây được giả lập dựa trên ngày 16/11/2025.
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-5 h-5 text-green-600"></i> Lịch Vạn Sự
+                        </h3>
+                        <span class="text-xs font-semibold px-2 py-1 bg-green-100 text-green-700 rounded-lg">Hôm nay</span>
+                    </div>
+
+                    <div class="text-center mb-6">
+                        <div class="flex justify-center items-center gap-6">
+                            <button id="prev_date" class="p-2 hover:bg-black/5 rounded-full transition-colors text-gray-400 hover:text-green-600">
+                                <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                            </button>
+                            <div class="flex flex-col items-center">
+                                <span id="calendar-day" class="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-green-600 to-teal-500">--</span>
+                                <span id="calendar-weekday" class="text-lg font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">--</span>
+                            </div>
+                            <button id="next_date" class="p-2 hover:bg-black/5 rounded-full transition-colors text-gray-400 hover:text-green-600">
+                                <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            Tháng <span id="calendar-month-year">--</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/50 dark:bg-gray-700/50 rounded-2xl p-4 border border-white/40">
+                        <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-3 mb-3">
+                            <div class="text-left">
+                                <div class="text-xs text-gray-500 uppercase">Âm Lịch</div>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white" id="calendar-lunar-day">--</div>
+                                <div class="text-xs text-gray-600 dark:text-gray-300" id="calendar-lunar-month">--</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-gray-500 uppercase">Giờ Hoàng Đạo</div>
+                                <div class="text-sm font-medium text-green-700 dark:text-green-400 mt-1">
+                                    Dần, Mão, Tỵ,<br>Thân, Tuất, Hợi
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs text-gray-600 dark:text-gray-300">
+                            <span id="calendar-lunar-year">--</span>
+                            <span id="calendar-time" class="font-mono font-bold text-blue-600 dark:text-blue-400">--:--:--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-[2rem] shadow-lg border border-white/50 dark:border-gray-700 p-6">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="zap" class="w-5 h-5 text-yellow-500"></i> Cảnh báo nhanh
+                </h3>
+                <ul class="space-y-3" id="quick-links">
+                    </ul>
+            </div>
+
+        </div>
+        
+    </div>
+</div>
+
+<style>
+    @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; opacity: 0; }
     
-    let currentDate = new Date(); // Biến lưu trữ ngày hiện tại (có thể thay đổi bằng nút ‹ ›)
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob { animation: blob 7s infinite; }
+    .animation-delay-2000 { animation-delay: 2s; }
+    .animation-delay-4000 { animation-delay: 4s; }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        initNewsPage();
+        initCalendar();
+    });
+
+    // --- MOCK DATA GENERATOR ---
+    const PROVINCES_SAMPLE = ['Hà Nội', 'TP. Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Lào Cai', 'Nghệ An', 'Quảng Ninh'];
+    
+    // Kho ảnh chất lượng cao (Unsplash Direct Links - Đảm bảo hoạt động)
+    const IMAGES = {
+    // Bão, áp thấp, mưa lớn, cảnh báo thiên tai
+        warning: "https://images.pexels.com/photos/1784577/pexels-photo-1784577.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+
+        // Nắng nóng gay gắt, trời oi bức
+        hot: "https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+
+        // Rét đậm, sương mù, không khí lạnh, vùng núi
+        cold: "https://images.pexels.com/photos/1363876/pexels-photo-1363876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+
+        // UV cao, trời xanh, biển đẹp, nắng vàng
+        uv: "https://images.pexels.com/photos/358457/pexels-photo-358457.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+
+        // Ngập lụt, mưa lớn kéo dài, triều cường
+        flood: "https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+
+        // Ảnh nổi bật (featured) – đẹp, hùng vĩ, phù hợp làm tiêu đề
+        featured: "https://images.pexels.com/photos/844297/pexels-photo-844297.jpeg?auto=compress&cs=tinysrgb&w=1600"
+    };
+
+    function getRandomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function generateNews() {
+        const news = [];
+        const today = new Date();
+        
+        // 1. Featured News (Tin quan trọng nhất hôm nay) - Thời tiết và thiên tai năm 2025
+        const p1 = 'Toàn quốc';
+        news.push({
+            id: 1,
+            title: `Thời tiết và thiên tai năm 2025 sẽ diễn biến thế nào?`,
+            summary: `Đáng chú ý, trong khoảng thời gian dự báo từ tháng 3-5/2025, trên phạm vi cả nước có khả năng xảy ra các hiện tượng thời tiết nguy hiểm như dông, lốc, sét, mưa đá và gió giật mạnh nguy hiểm.`,
+            image: IMAGES.warning, // Ảnh Featured cho cảnh báo thiên tai
+            date: today.toLocaleDateString('vi-VN'),
+            link: `https://moitruong.net.vn/thoi-tiet-va-thien-tai-nam-2025-se-dien-bien-the-nao-80955.html`,
+            featured: true,
+            province: p1,
+            source: 'Môi Trường'
+        });
+
+        // 2. Sub News (Tin phụ) - Dựa trên các tin thời tiết thực tế
+        const subNews = [
+            {
+                title: `Dự báo mùa hè 2025 nắng nóng ít gay gắt hơn`,
+                summary: `Cơ quan khí tượng thủy văn nhận định, trên phạm vi cả nước có khả năng xảy ra các hiện tượng thời tiết nguy hiểm như dông, lốc, sét, mưa đá và gió giật mạnh. Mưa sẽ tăng dần trong các tháng tới.`,
+                image: IMAGES.hot,
+                date: today.toLocaleDateString('vi-VN'),
+                link: `https://baochinhphu.vn/du-bao-mua-he-2025-nang-nong-it-gay-gat-hon-102250318161759202.htm`,
+                featured: false,
+                province: 'Toàn quốc',
+                source: 'Báo Chính Phủ'
+            },
+            {
+                title: `Dự báo nắng nóng gay gắt trong năm 2025`,
+                summary: `Nhận định về xu thế các hình thái thời tiết có khả năng xảy ra trong năm 2025, nhiệt độ toàn cầu có xu hướng tăng, do vậy Việt Nam khả năng sẽ phải đối mặt với nắng nóng, nắng nóng gay gắt và khốc liệt.`,
+                image: IMAGES.hot,
+                date: today.toLocaleDateString('vi-VN'),
+                link: `https://baochinhphu.vn/du-bao-nang-nong-gay-gat-trong-nam-2025-102241218165504533.htm`,
+                featured: false,
+                province: 'Việt Nam',
+                source: 'Báo Chính Phủ'
+            },
+            {
+                title: `Năm 2025, xu thế thời tiết có gì bất thường?`,
+                summary: `Xu thế thời tiết năm 2025 dự báo có khoảng 5-6 cơn bão/áp thấp nhiệt đới ảnh hưởng đến đất liền nước ta; xâm nhập mặn tăng cao ở ĐBSCL.`,
+                image: IMAGES.warning,
+                date: today.toLocaleDateString('vi-VN'),
+                link: `https://nld.com.vn/nam-2025-xu-the-thoi-tiet-co-gi-bat-thuong-196250118134907213.htm`,
+                featured: false,
+                province: 'Toàn quốc',
+                source: 'Người Lao Động'
+            },
+            {
+                title: `Diễn biến những hình thái thời tiết đáng lưu ý trên cả nước năm 2025`,
+                summary: `La Nina đang hoạt động và khả năng kéo dài trong 3 tháng tới. Các hiện tượng thời tiết không khí lạnh, nắng nóng, mưa bão,… trong năm 2025 dự báo nhiều diễn biến khó lường.`,
+                image: IMAGES.flood,
+                date: today.toLocaleDateString('vi-VN'),
+                link: `https://vietnamnet.vn/dien-bien-nhung-hinh-thai-thoi-tiet-dang-luu-y-tren-ca-nuoc-nam-2025-2363885.html`,
+                featured: false,
+                province: 'Việt Nam',
+                source: 'VietnamNet'
+            }
+        ];
+        
+        news.push(...subNews);
+        return news;
+    }
+
+    // --- RENDER LOGIC ---
+    function initNewsPage() {
+        const newsList = generateNews();
+        
+        const featuredContainer = document.getElementById('featured-news');
+        const gridContainer = document.getElementById('news-grid');
+        const quickLinksContainer = document.getElementById('quick-links');
+
+        // Render Featured
+        const feat = newsList[0];
+        featuredContainer.innerHTML = `
+            <div onclick="window.open('${feat.link}', '_blank')" class="relative overflow-hidden rounded-[2rem] h-96 shadow-2xl group transition-transform duration-300 hover:scale-[1.01]">
+                <img src="${feat.image}" alt="${feat.title}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-8 flex flex-col justify-end">
+                    <span class="inline-block px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-lg mb-3 w-fit animate-pulse">
+                        TIN NỔI BẬT
+                    </span>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-white mb-2 leading-tight group-hover:text-blue-200 transition-colors">
+                        ${feat.title}
+                    </h2>
+                    <p class="text-gray-200 line-clamp-2 mb-4 text-sm md:text-base hidden md:block">
+                        ${feat.summary}
+                    </p>
+                    <div class="flex items-center text-gray-300 text-xs gap-4 mt-auto">
+                        <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${feat.date}</span>
+                        <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${feat.province}</span>
+                        <span class="ml-auto text-blue-300 font-semibold group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                            Xem chi tiết <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Render Grid
+        gridContainer.innerHTML = newsList.slice(1).map(item => `
+            <div onclick="window.open('${item.link}', '_blank')" class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-white/50 dark:border-gray-700 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group flex flex-col h-full">
+                <div class="h-40 overflow-hidden relative">
+                    <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-3 right-3 bg-white/90 dark:bg-black/70 backdrop-blur text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                        ${item.date}
+                    </div>
+                </div>
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        ${item.title}
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-4 flex-1">
+                        ${item.summary}
+                    </p>
+                    <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <span class="text-xs text-gray-500 font-medium flex items-center gap-1">
+                            <i data-lucide="map-pin" class="w-3 h-3"></i> ${item.province}
+                        </span>
+                        <span class="text-xs text-blue-500">${item.source}</span>
+                        <i data-lucide="external-link" class="w-4 h-4 text-gray-400 group-hover:text-blue-500"></i>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Render Quick Links
+        quickLinksContainer.innerHTML = PROVINCES_SAMPLE.slice(0, 5).map(p => `
+            <li>
+                <a href="/forecast?province=${encodeURIComponent(p)}" class="flex items-center justify-between p-3 rounded-xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors group border border-transparent hover:border-blue-200">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-blue-600">${p}</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-blue-500"></i>
+                </a>
+            </li>
+        `).join('');
+
+        lucide.createIcons();
+    }
+
+    // --- CALENDAR LOGIC ---
+    let currentDate = new Date();
+
+    function initCalendar() {
+        updateCalendar(currentDate);
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('calendar-time').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+        }, 1000);
+
+        document.getElementById('prev_date').onclick = () => {
+            currentDate.setDate(currentDate.getDate() - 1);
+            updateCalendar(currentDate);
+        };
+        document.getElementById('next_date').onclick = () => {
+            currentDate.setDate(currentDate.getDate() + 1);
+            updateCalendar(currentDate);
+        };
+    }
 
     function updateCalendar(date) {
-        // Cập nhật ngày dương lịch
-        const options = { weekday: 'long' };
-        document.getElementById('calendar-month-year').textContent = `${date.getMonth() + 1}/${date.getFullYear()}`;
         document.getElementById('calendar-day').textContent = date.getDate();
-        // Chuyển sang Tiếng Việt và viết hoa chữ cái đầu
-        const weekdayName = date.toLocaleDateString('vi-VN', options);
-        document.getElementById('calendar-weekday').textContent = weekdayName.charAt(0).toUpperCase() + weekdayName.slice(1);
+        document.getElementById('calendar-month-year').textContent = `${date.getMonth() + 1}/${date.getFullYear()}`;
         
-        // Giả lập Lịch Âm (Cần API/Logic phức tạp hơn để tính chính xác cho mọi ngày)
-        // Dữ liệu này chỉ mang tính minh họa giao diện
-        document.getElementById('calendar-lunar-month').textContent = 'Tháng 9'; 
-        document.getElementById('calendar-lunar-day').textContent = '27';
-        document.getElementById('calendar-lunar-hour-day').innerHTML = 'Giờ Tuất<br>Ngày Kỷ Sửu<br>Tháng Bính Tuất';
+        const options = { weekday: 'long' };
+        let weekday = date.toLocaleDateString('vi-VN', options);
+        weekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+        document.getElementById('calendar-weekday').textContent = weekday;
+
+        // Giả lập Âm lịch (Demo)
+        const fakeLunarDay = (date.getDate() + 10) % 30 || 30; // Logic giả đơn giản
+        document.getElementById('calendar-lunar-day').textContent = fakeLunarDay;
+        document.getElementById('calendar-lunar-month').textContent = 'Tháng 9';
         document.getElementById('calendar-lunar-year').textContent = 'Năm Ất Tỵ';
     }
-
-    // Hàm cập nhật thời gian mỗi giây
-    function updateTime() {
-        const now = new Date();
-        document.getElementById('calendar-time').textContent = now.toLocaleTimeString('en-US', { hour12: false });
-    }
-
-    // Khởi tạo lịch
-    updateCalendar(currentDate);
-    
-    // Cập nhật thời gian liên tục
-    setInterval(updateTime, 1000);
-
-    // Thêm chức năng chuyển ngày đơn giản (Chỉ đổi ngày dương lịch)
-    document.getElementById('prev_date').addEventListener('click', () => {
-        currentDate.setDate(currentDate.getDate() - 1);
-        updateCalendar(currentDate);
-    });
-
-    document.getElementById('next_date').addEventListener('click', () => {
-        currentDate.setDate(currentDate.getDate() + 1);
-        updateCalendar(currentDate);
-    });
 </script>
 {% endblock %}

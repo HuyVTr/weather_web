@@ -7,11 +7,11 @@ import traceback
 # --- CẤU HÌNH DATABASE ---
 # Cần được thay đổi cho phù hợp
 DB_CONFIG = {
-    "host": "db.rrfonraxfittnyhoekwt.supabase.co",
-    "port": 5432,
-    "dbname": "postgres",
-    "user": "postgres",
-    "password": "123456" 
+    "host": "localhost",         # Chạy trên máy cá nhân
+    "port": 5432,                # Cổng mặc định PostgreSQL
+    "dbname": "weather_project", # Tên database bạn vừa tạo trong pgAdmin
+    "user": "postgres",          # Username mặc định
+    "password": "123456"         # Mật khẩu của bạn (hãy đổi nếu khác)
 }
 
 # --- HẰNG SỐ CẢNH BÁO ---

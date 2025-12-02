@@ -1,60 +1,47 @@
-<footer class="mt-12 bg-gradient-to-br from-[#87CEEB] to-[#AFD7E0] text-gray-800 dark:bg-gradient-to-br from-gray-800 to-gray-900 dark:text-white">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<footer class="bg-gray-800 text-white pt-12 pb-8 mt-auto border-t border-gray-700">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-                <a href="{{ url_for('main_bp.route_home') }}" class="flex items-center group mb-4">
-                    <svg class="h-8 w-8 text-[#FADBD8] group-hover:scale-110 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                <div class="flex items-center gap-2 mb-4">
+                    <svg class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-3.71 0-6.73 2.7-7.29 6.29C2.47 10.61 0 13.1 0 16c0 3.31 2.69 6 6 6h13c3.87 0 7-3.13 7-7 0-3.61-2.73-6.56-6.65-6.96zM12 20c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
                     </svg>
-                    <span class="ml-2 text-xl font-bold text-gray-800 dark:text-white group-hover:text-[#FADBD8] transition-colors">WeatherVN</span>
-                </a>
-                <p class="text-sm">
-                    Cung cấp thông tin thời tiết chính xác và đáng tin cậy cho người dân Việt Nam.
+                    <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">WeatherVN</span>
+                </div>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                    Hệ thống dự báo thời tiết thông minh, cung cấp dữ liệu chính xác và nhanh chóng giúp bạn lên kế hoạch hiệu quả cho mọi hoạt động.
                 </p>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-800 dark:text-white uppercase tracking-wider mb-4">Dịch vụ</h3>
-                <ul class="space-y-2">
-                    <li><a href="{{ url_for('forecast_bp.route_forecast') }}" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors">Dự báo thời tiết</a></li>
-                    <li><a href="{{ url_for('storm_bp.route_storm') }}" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors">Cảnh báo bão</a></li>
-                    <li><a href="#" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors">Bản đồ thời tiết</a></li>
-                    <li><a href="#" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors">API thời tiết</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-800 dark:text-white uppercase tracking-wider mb-4">Thông tin</h3>
-                <ul class="space-y-2">
-                    <li><a href="#" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors">Về chúng tôi</a></li>
-                    <li><a href="#" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors">Liên hệ</a></li>
-                    <li><a href="#" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors">Chính sách bảo mật</a></li>
-                    <li><a href="#" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors">Điều khoản sử dụng</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-800 dark:text-white uppercase tracking-wider mb-4">Liên hệ</h3>
-                <ul class="space-y-3">
-                    <li class="flex items-center">
-                        <i data-lucide="phone" class="w-4 h-4 mr-2 text-[#F9E79F]"></i>
-                        <span>1900 1234</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-lucide="mail" class="w-4 h-4 mr-2 text-[#F9E79F]"></i>
-                        <span>info@weathervn.com</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-[#F9E79F]"></i>
-                        <span>Hà Nội, Việt Nam</span>
-                    </li>
-                </ul>
-                <div class="mt-4 flex space-x-4">
-                    <a href="#" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
-                    <a href="#" class="hover:text-[#FADBD8] dark:hover:text-[#F9E79F] transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
+
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4 border-b border-gray-600 pb-2 inline-block">Khám phá</h3>
+                <ul class="space-y-2">
+                    <li><a href="{{ url_for('main_bp.route_home') }}" class="text-gray-400 hover:text-cyan-400 transition-colors flex items-center"><span class="mr-2">›</span> Trang chủ</a></li>
+                    <li><a href="{{ url_for('forecast_bp.route_forecast') }}" class="text-gray-400 hover:text-cyan-400 transition-colors flex items-center"><span class="mr-2">›</span> Dự báo thời tiết</a></li>
+                    <li><a href="http://127.0.0.1:8000/" class="text-gray-400 hover:text-cyan-400 transition-colors flex items-center"><span class="mr-2">›</span> Bản đồ vệ tinh</a></li>
+                    <li><a href="{{ url_for('chart_bp.route_chart') }}" class="text-gray-400 hover:text-cyan-400 transition-colors flex items-center"><span class="mr-2">›</span> Biểu đồ phân tích</a></li>
+                    <li><a href="{{ url_for('main_bp.route_news') }}" class="text-gray-400 hover:text-cyan-400 transition-colors flex items-center"><span class="mr-2">›</span> Tin tức</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4 border-b border-gray-600 pb-2 inline-block">Về chúng tôi</h3>
+                <ul class="space-y-2">
+                    <li><a href="{{ url_for('main_bp.about') }}" class="text-gray-400 hover:text-green-400 transition-colors flex items-center"><span class="mr-2">›</span> Giới thiệu</a></li>
+                    <li><a href="{{ url_for('main_bp.contact') }}" class="text-gray-400 hover:text-green-400 transition-colors flex items-center"><span class="mr-2">›</span> Liên hệ & Góp ý</a></li>
+                    <li><a href="{{ url_for('main_bp.privacy') }}" class="text-gray-400 hover:text-green-400 transition-colors flex items-center"><span class="mr-2">›</span> Chính sách bảo mật</a></li>
+                    <li><a href="{{ url_for('main_bp.terms') }}" class="text-gray-400 hover:text-green-400 transition-colors flex items-center"><span class="mr-2">›</span> Điều khoản sử dụng</a></li>
+                </ul>
+            </div>
         </div>
-        <hr class="border-gray-300 dark:border-gray-700 my-8">
-        <div class="text-center text-sm text-gray-800 dark:text-gray-300">
-            &copy; 2021 WeatherVN. Tất cả quyền được bảo lưu.
+
+        <div class="border-t border-gray-700 pt-6 mt-6 text-center text-sm text-gray-500">
+            <p>&copy; 2025 WeatherVN</p>
         </div>
     </div>
 </footer>

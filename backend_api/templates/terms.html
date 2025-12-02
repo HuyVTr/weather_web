@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block title %}Điều khoản sử dụng - WeatherVN{% endblock %}
+
+{% block content %}
+<section class="bg-gray-100 min-h-screen py-8">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md border border-gray-200 p-8 md:p-12">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">Điều khoản sử dụng</h1>
+            
+            <div class="space-y-6 text-gray-700 leading-relaxed">
+                <p class="italic text-gray-500">
+                    Website WeatherVN là sản phẩm thuộc Đồ án Chuyên ngành Công nghệ Thông tin - HUTECH. Việc sử dụng website đồng nghĩa với việc bạn đồng ý các điều khoản sau:
+                </p>
+                
+                <div>
+                    <h2 class="text-xl font-bold text-blue-700 mb-2">1. Mục đích sử dụng</h2>
+                    <p>Hệ thống được xây dựng với mục đích học tập, nghiên cứu khoa học về ứng dụng thuật toán XGBoost trong dự báo thời tiết[cite: 163]. Dữ liệu trên website phục vụ cho mục đích tham khảo.</p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-blue-700 mb-2">2. Miễn trừ trách nhiệm (Quan trọng)</h2>
+                    <p>
+                        Mặc dù chúng tôi sử dụng các mô hình AI tiên tiến và nguồn dữ liệu từ OpenWeatherMap[cite: 150], nhưng dự báo thời tiết và <strong>dự báo bão trên Biển Đông</strong> luôn có sai số nhất định. 
+                        <br>Chúng tôi <strong>không chịu trách nhiệm</strong> pháp lý cho bất kỳ thiệt hại nào về người và tài sản do việc dựa hoàn toàn vào thông tin từ website này để đưa ra quyết định (như đi biển, trồng trọt quy mô lớn, hàng không...). Vui lòng tham khảo thêm các kênh chính thống của Nhà nước khi có thiên tai nguy hiểm.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-blue-700 mb-2">3. Quyền sở hữu trí tuệ</h2>
+                    <p>Mã nguồn, thuật toán dự báo và báo cáo đồ án thuộc quyền sở hữu của nhóm sinh viên thực hiện và trường Đại học Công nghệ TP.HCM (HUTECH)[cite: 1, 24].</p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-blue-700 mb-2">4. Hành vi người dùng</h2>
+                    <p>Nghiêm cấm các hành vi tấn công hệ thống, spam phản hồi hoặc sử dụng dữ liệu từ website cho các mục đích thương mại mà không có sự đồng ý của nhóm tác giả.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

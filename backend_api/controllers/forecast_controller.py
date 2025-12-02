@@ -4,20 +4,26 @@
 from flask import Blueprint, render_template, request, jsonify
 import sys
 import os
+import json
+import requests
+import pandas as pd
 import numpy as np
+from datetime import datetime, timedelta
+from sqlalchemy import create_engine, text
 
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from backend_api.models.weather_model import Provinces
 from data_pipeline.data_storage import connect_to_db, get_last_timestamp
-from machine_learning.predictor import predict_storm
-
-import requests
-import pandas as pd
-from datetime import datetime, timedelta
+from services.forecast_ml.predictor import predict_storm
 
 forecast_bp = Blueprint('forecast_bp', __name__)
+
+# --- CẤU HÌNH DATABASE CHO CONTROLLER ---
+# Lưu ý: Thay 'password' bằng mật khẩu thực của bạn
+DB_URI = "postgresql://postgres:password@localhost:5432/weather_db"
+db_engine = create_engine(DB_URI)
 
 @forecast_bp.route('/forecast')
 def route_forecast():
@@ -82,8 +88,15 @@ def merge_api_and_ml_data(api_data, ml_data, province_name):
         
         # Thêm từ API (nếu có)
         for i, time_str in enumerate(api_times):
-            time_obj = datetime.fromisoformat(time_str.replace('Z', '+00:00'))
-            if time_obj >= now:
+            # Xử lý format thời gian đôi khi có 'Z'
+            clean_time_str = time_str.replace('Z', '+00:00')
+            try:
+                time_obj = datetime.fromisoformat(clean_time_str)
+            except ValueError:
+                # Fallback nếu format lạ
+                continue
+                
+            if time_obj >= now - timedelta(hours=1): # Lấy cả giờ hiện tại
                 all_times.append({
                     'time': time_str,
                     'source': 'api',
@@ -104,36 +117,41 @@ def merge_api_and_ml_data(api_data, ml_data, province_name):
         # Sort theo thời gian
         all_times.sort(key=lambda x: x['time'])
         
-        # Merge data
-        for time_info in all_times[:48]:  # Chỉ lấy 48 giờ
+        # Merge data (Lấy tối đa 48h)
+        for time_info in all_times[:48]:
             hourly_dict['time'].append(time_info['time'])
             
             if time_info['source'] == 'api':
                 idx = time_info['index']
-                hourly_dict['temperature_2m'].append(api_hourly.get('temperature_2m', [])[idx] if idx < len(api_hourly.get('temperature_2m', [])) else 0)
-                hourly_dict['relative_humidity_2m'].append(api_hourly.get('relative_humidity_2m', [])[idx] if idx < len(api_hourly.get('relative_humidity_2m', [])) else 0)
-                hourly_dict['precipitation'].append(api_hourly.get('precipitation', [])[idx] if idx < len(api_hourly.get('precipitation', [])) else 0)
-                hourly_dict['rain'].append(api_hourly.get('rain', [])[idx] if idx < len(api_hourly.get('rain', [])) else 0)
-                hourly_dict['showers'].append(api_hourly.get('showers', [])[idx] if idx < len(api_hourly.get('showers', [])) else 0)
-                hourly_dict['weather_code'].append(api_hourly.get('weather_code', [])[idx] if idx < len(api_hourly.get('weather_code', [])) else 0)
-                hourly_dict['pressure_msl'].append(api_hourly.get('pressure_msl', [])[idx] if idx < len(api_hourly.get('pressure_msl', [])) else 0)
-                hourly_dict['wind_speed_10m'].append(api_hourly.get('wind_speed_10m', [])[idx] if idx < len(api_hourly.get('wind_speed_10m', [])) else 0)
-                hourly_dict['wind_direction_10m'].append(api_hourly.get('wind_direction_10m', [])[idx] if idx < len(api_hourly.get('wind_direction_10m', [])) else 0)
-                hourly_dict['visibility'].append(api_hourly.get('visibility', [])[idx] if idx < len(api_hourly.get('visibility', [])) else 0)
-                hourly_dict['uv_index'].append(api_hourly.get('uv_index', [])[idx] if idx < len(api_hourly.get('uv_index', [])) else 0)
+                # Helper function để lấy safe value
+                def get_val(key, default=0):
+                    arr = api_hourly.get(key, [])
+                    return arr[idx] if idx < len(arr) else default
+
+                hourly_dict['temperature_2m'].append(get_val('temperature_2m'))
+                hourly_dict['relative_humidity_2m'].append(get_val('relative_humidity_2m'))
+                hourly_dict['precipitation'].append(get_val('precipitation'))
+                hourly_dict['rain'].append(get_val('rain'))
+                hourly_dict['showers'].append(get_val('showers'))
+                hourly_dict['weather_code'].append(get_val('weather_code'))
+                hourly_dict['pressure_msl'].append(get_val('pressure_msl'))
+                hourly_dict['wind_speed_10m'].append(get_val('wind_speed_10m'))
+                hourly_dict['wind_direction_10m'].append(get_val('wind_direction_10m'))
+                hourly_dict['visibility'].append(get_val('visibility'))
+                hourly_dict['uv_index'].append(get_val('uv_index'))
             else:  # ML data
                 ml_hour = time_info['data']
-                hourly_dict['temperature_2m'].append(ml_hour['temperature_2m'])
-                hourly_dict['relative_humidity_2m'].append(ml_hour['relative_humidity_2m'])
-                hourly_dict['precipitation'].append(ml_hour['precipitation'])
-                hourly_dict['rain'].append(ml_hour['precipitation'])
+                hourly_dict['temperature_2m'].append(ml_hour.get('temperature_2m', 0))
+                hourly_dict['relative_humidity_2m'].append(ml_hour.get('relative_humidity_2m', 0))
+                hourly_dict['precipitation'].append(ml_hour.get('precipitation', 0))
+                hourly_dict['rain'].append(ml_hour.get('precipitation', 0)) # ML gộp rain
                 hourly_dict['showers'].append(0)
-                hourly_dict['weather_code'].append(ml_hour['weather_code'])
-                hourly_dict['pressure_msl'].append(ml_hour['pressure_msl'])
-                hourly_dict['wind_speed_10m'].append(ml_hour['wind_speed_10m'])
+                hourly_dict['weather_code'].append(ml_hour.get('weather_code', 0))
+                hourly_dict['pressure_msl'].append(ml_hour.get('pressure_msl', 0))
+                hourly_dict['wind_speed_10m'].append(ml_hour.get('wind_speed_10m', 0))
                 hourly_dict['wind_direction_10m'].append(0)
-                hourly_dict['visibility'].append(ml_hour['visibility'])
-                hourly_dict['uv_index'].append(ml_hour['uv_index'])
+                hourly_dict['visibility'].append(ml_hour.get('visibility', 0))
+                hourly_dict['uv_index'].append(ml_hour.get('uv_index', 0))
         
         merged_data['hourly'] = hourly_dict
     else:
@@ -144,12 +162,10 @@ def merge_api_and_ml_data(api_data, ml_data, province_name):
     
     if ml_data and 'daily_forecast' in ml_data:
         ml_daily = ml_data['daily_forecast']
-        
-        # Nếu API có ít hơn 7 ngày, bổ sung từ ML
         api_daily_times = api_daily.get('time', [])
         
+        # Nếu API có ít hơn 7 ngày, bổ sung từ ML
         if len(api_daily_times) < 7:
-            # Merge daily data
             daily_dict = {
                 'time': list(api_daily.get('time', [])),
                 'weather_code': list(api_daily.get('weather_code', [])),
@@ -161,7 +177,6 @@ def merge_api_and_ml_data(api_data, ml_data, province_name):
                 'sunset': list(api_daily.get('sunset', []))
             }
             
-            # Thêm từ ML
             for ml_day in ml_daily:
                 if ml_day['time'] not in daily_dict['time']:
                     daily_dict['time'].append(ml_day['time'])
@@ -186,7 +201,14 @@ def merge_api_and_ml_data(api_data, ml_data, province_name):
 
 @forecast_bp.route('/api/forecast')
 def api_get_forecast():
-    """API lấy dữ liệu thời tiết (từ Open-Meteo + ML nếu cần + AQI)."""
+    """
+    API lấy dữ liệu thời tiết (Open-Meteo + ML/Cache + AQI).
+    Logic mới:
+    1. Lấy API Open-Meteo (Realtime).
+    2. Thử lấy dữ liệu ML từ Cache DB (weather_forecast_cache).
+    3. Nếu không có Cache, chạy Fallback (tính toán trực tiếp).
+    4. Merge dữ liệu và trả về.
+    """
     province_name = request.args.get('province', '')
     days = int(request.args.get('days', 7))
     
@@ -194,11 +216,12 @@ def api_get_forecast():
         return jsonify({"error": "Thiếu province"}), 400
 
     try:
+        # Tìm tỉnh trong DB
         province = Provinces.query.filter_by(name=province_name).first()
         if not province:
             return jsonify({"error": "Không tìm thấy tỉnh"}), 404
 
-        # Fetch weather from Open-Meteo
+        # 1. Gọi Open-Meteo API
         url = "https://api.open-meteo.com/v1/forecast"
         params = {
             "latitude": province.latitude,
@@ -211,35 +234,52 @@ def api_get_forecast():
         }
         
         response = requests.get(url, params=params, timeout=10)
+        # Nếu lỗi Open-Meteo, có thể vẫn chạy tiếp nếu muốn, nhưng ở đây ta raise lỗi
         response.raise_for_status()
         api_data = response.json()
 
-        # Dự đoán ML
+        # 2. LẤY DỮ LIỆU ML (Ưu tiên Cache)
         ml_data = None
         try:
-            current_weather_data = {
-                'temperature_2m': api_data.get("current", {}).get('temperature_2m', 25),
-                'relative_humidity_2m': api_data.get("current", {}).get('relative_humidity_2m', 70),
-                'pressure_msl': api_data.get("current", {}).get('pressure_msl', 1013),
-                'wind_speed_10m': api_data.get("current", {}).get('wind_speed_10m', 5)
-            }
+            # Query bảng cache
+            query = text("SELECT forecast_data FROM weather_forecast_cache WHERE province_id = :pid")
+            with db_engine.connect() as conn:
+                result = conn.execute(query, {"pid": province.province_id}).fetchone()
             
-            ml_data = predict_storm(province.province_id, current_weather_data)
-            
-            if 'error' in ml_data:
-                print(f"ML prediction error: {ml_data['error']}")
-                ml_data = None
-                
-        except Exception as e:
-            print(f"Lỗi ML prediction: {e}")
-            import traceback
-            traceback.print_exc()
-            ml_data = None
+            # Nếu có dữ liệu trong Cache
+            if result and result[0]:
+                raw_data = result[0]
+                # Xử lý JSONB (thường SQLAlchemy trả về dict/list luôn, hoặc str)
+                if isinstance(raw_data, str):
+                    ml_data = json.loads(raw_data)
+                else:
+                    ml_data = raw_data
+                # print(f"⚡ [CACHE HIT] Đã lấy dữ liệu dự báo cho {province_name}")
 
-        # Merge API và ML data
+            # 3. FALLBACK: Nếu Cache trống, chạy tính toán ngay lập tức (Chậm nhưng chắc)
+            if not ml_data:
+                print(f"🐢 [CACHE MISS] Đang tính toán realtime cho {province_name}...")
+                current_weather_data = {
+                    'temperature_2m': api_data.get("current", {}).get('temperature_2m', 25),
+                    'relative_humidity_2m': api_data.get("current", {}).get('relative_humidity_2m', 70),
+                    'pressure_msl': api_data.get("current", {}).get('pressure_msl', 1013),
+                    'wind_speed_10m': api_data.get("current", {}).get('wind_speed_10m', 5)
+                }
+                
+                ml_data = predict_storm(province.province_id, current_weather_data)
+                
+                if 'error' in ml_data:
+                    print(f"Lỗi ML prediction: {ml_data['error']}")
+                    ml_data = None
+
+        except Exception as e:
+            print(f"Lỗi khi xử lý Cache/ML: {e}")
+            # Nếu lỗi DB cache, vẫn tiếp tục với ml_data = None (chỉ hiển thị API data)
+
+        # 4. Merge API và ML data
         forecast_data = merge_api_and_ml_data(api_data, ml_data, province_name)
 
-        # Fetch AQI
+        # 5. Fetch AQI (Chỉ số không khí)
         try:
             aqi_url = f"https://api.waqi.info/feed/geo:{province.latitude};{province.longitude}/?token=demo"
             aqi_response = requests.get(aqi_url, timeout=5)
@@ -262,10 +302,11 @@ def api_get_forecast():
         return jsonify(forecast_data)
         
     except requests.RequestException as e:
-        print(f"Lỗi request: {e}")
-        return jsonify({"error": f"Lỗi khi gọi API thời tiết: {str(e)}"}), 500
+        print(f"Lỗi request API: {e}")
+        return jsonify({"error": f"Lỗi kết nối API thời tiết: {str(e)}"}), 500
     except Exception as e:
         print(f"Lỗi tổng quát: {e}")
+        # In traceback để debug
         import traceback
         traceback.print_exc()
-        return jsonify({"error": f"Lỗi khi lấy dữ liệu: {str(e)}"}), 500
+        return jsonify({"error": f"Lỗi server: {str(e)}"}), 500

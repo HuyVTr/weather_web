@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block title %}Về chúng tôi - WeatherVN (HUTECH){% endblock %}
+
+{% block content %}
+<section class="bg-gray-100 min-h-screen py-8">
+    <div class="container mx-auto px-4">
+        <div class="relative bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 opacity-90"></div>
+            <div class="relative p-10 text-center text-white">
+                <h1 class="text-4xl font-extrabold mb-4">Đồ án Website Dự báo Thời tiết</h1>
+                <p class="text-xl font-medium max-w-3xl mx-auto">
+                    Ứng dụng công nghệ Học máy (Machine Learning) để dự báo thời tiết và cảnh báo thiên tai tại Việt Nam.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2 border-blue-500 inline-block">Thông tin Đồ án</h2>
+                <div class="space-y-4 text-gray-700">
+                    <p><strong>Đề tài:</strong> Xây dựng hệ thống Web dự báo thời tiết & Cảnh báo bão sử dụng các thuật toán AI.</p>
+                    <p><strong>Trường:</strong> Đại học Công nghệ TP.HCM (HUTECH).</p>
+                    <p><strong>Khoa:</strong> Công nghệ Thông tin - Chuyên ngành Công nghệ Phần mềm.</p>
+                    <p><strong>Giảng viên hướng dẫn:</strong> <span class="text-blue-700 font-bold">PGS. TS. Võ Đình Bảy</span>.</p>
+                    
+                    <div class="mt-4 bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-blue-800 mb-2">Nhóm sinh viên thực hiện:</h3>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            <li><strong>Phạm Đức Thành</strong> - MSSV: 2280602956 (Lớp 22DTHG8)</li>
+                            <li><strong>Võ Trường Huy</strong> - MSSV: 2280601278 (Lớp 22DTHG8)</li>
+                            <li><strong>Giáp Trọng Hiếu</strong> - MSSV: 2280600941 (Lớp 22DTHG8)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2 border-blue-500 inline-block">Công nghệ & Tính năng</h2>
+                <div class="space-y-4">
+                    <p class="text-gray-600 leading-relaxed">
+                        Hệ thống được xây dựng trên mô hình <strong>MVC</strong> với Backend là <strong>Flask (Python)</strong>, Frontend sử dụng HTML/TailwindCSS, JS.
+                    </p>
+                    
+                    <ul class="space-y-3 mt-4">
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="text-gray-700"><strong>Dự báo 7 ngày và dự đoán theo từng giờ:</strong> Sử dụng thuật toán <strong>XGBoost Multi-Output Regression</strong> để dự đoán nhiệt độ, độ ẩm, lượng mưa với độ chính xác cao.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-red-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <span class="text-gray-700"><strong>Dự báo bão Biển Đông:</strong> (Tính năng mới) Tích hợp mô hình theo dõi áp thấp nhiệt đới và quỹ đạo bão trên khu vực Biển Đông để đưa ra cảnh báo sớm cho ngư dân và người dân vùng ven biển.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-yellow-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <span class="text-gray-700"><strong>Tốc độ xử lý:</strong> Tối ưu hóa dữ liệu lịch sử từ OpenWeatherMap.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

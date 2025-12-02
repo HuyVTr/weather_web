@@ -9,12 +9,12 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
 
 # Import các modules nội bộ
-from machine_learning.predictor import predict_storm
+from services.forecast_ml.predictor import predict_storm
 from backend_api.models.weather_model import Provinces
 
 # SỬA LỖI IMPORTERROR
 # Import db và hàm create_app (Application Factory)
-from backend_api.app import db, create_app 
+from app import db, create_app 
 
 # Khởi tạo instance Flask (đã cấu hình DB)
 flask_app = create_app()

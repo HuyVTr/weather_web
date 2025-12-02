@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block title %}Biểu đồ thời tiết - WeatherVN{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <h1 class="text-4xl font-bold text-center text-white mb-10 drop-shadow-lg">
+        Biểu đồ nhiệt độ 7 ngày tới - Hà Nội
+    </h1>
+
+    <div class="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/20">
+        <canvas id="weatherChart" height="100"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('weatherChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Hôm nay', 'Ngày mai', '3', '4', '5', '6', '7'],
+            datasets: [{
+                label: 'Nhiệt độ (°C)',
+                data: [28, 30, 29, 31, 27, 26, 29],
+                borderColor: '#FBBF24',
+                backgroundColor: 'rgba(251, 191, 36, 0.2)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#FFF',
+                pointBorderColor: '#F59E0B',
+                pointHoverRadius: 8,
+                pointRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            
+            plugins: {
+                legend: { labels: { color: 'white', font: { size: 16 } } }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: false,
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { color: 'white' }
+                },
+                x: { 
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { color: 'white' }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

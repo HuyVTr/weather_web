@@ -1,262 +1,350 @@
 {% extends "layout.html" %}
-{% block title %}Trang chủ - Dự báo Thời tiết{% endblock %}
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block title %}Trang chủ - Dự báo Thời tiết AI{% endblock %}
+
+{% block content %}
+<div class="fixed inset-0 -z-10 h-full w-full bg-gradient-to-br from-blue-50 via-blue-100 to-purple-100 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
+    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-blue-400/20 blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-purple-400/20 blur-3xl"></div>
+</div>
+
+<div class="min-h-screen container mx-auto px-4 py-8">
+    
+    <div class="flex flex-col lg:flex-row items-center justify-between gap-12 py-12 lg:py-20">
+        
+        <div class="flex-1 text-center lg:text-left space-y-8 animate-fade-in-up">
+            <div class="space-y-4">
+                <!-- <span class="inline-block px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-sm font-semibold tracking-wide shadow-sm">
+                    ✨ Tích hợp AI & Machine Learning
+                </span> -->
+                <h1 class="text-5xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 leading-tight pb-2">
+                    Dự báo thời tiết <br> Chính xác & Hiện đại
+                </h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0">
+                    Cập nhật thông tin thời tiết theo thời gian thực và dự báo bão sớm nhờ công nghệ Machine Learning.
+                </p>
+            </div>
+
+            <div class="relative max-w-md mx-auto lg:mx-0 group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="h-6 w-6 text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
+                </div>
+                <input type="text" id="province-search" list="province-list" 
+                    class="block w-full pl-12 pr-4 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-lg text-white transition-all outline-none"
+                    placeholder="Nhập tên tỉnh/thành phố..." autocomplete="off">
+                <datalist id="province-list">
+                    </datalist>
+                <button id="search-btn" class="absolute right-2 top-2 bottom-2 px-6 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg transform active:scale-95">
+                    Xem
+                </button>
+            </div>
+            
+            <div class="flex items-center justify-center lg:justify-start gap-4 text-sm text-gray-500 dark:text-gray-400">
+                <i data-lucide="map-pin" class="w-4 h-4"></i>
+                <span id="location-status">Đang tìm vị trí của bạn...</span>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full max-w-md relative animate-fade-in-up" style="animation-delay: 0.2s;">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-300 rounded-full mix-blend-multiply filter blur-2xl opacity-70 animate-blob"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-300 rounded-full mix-blend-multiply filter blur-2xl opacity-70 animate-blob animation-delay-2000"></div>
+
+            <div id="hero-card" class="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/50 dark:border-gray-600/50 rounded-[2rem] p-8 shadow-2xl transition-all hover:scale-[1.02] cursor-pointer">
+                <div id="hero-loading" class="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-[2rem] z-10">
+                    <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
+                </div>
+
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-1" id="hero-location">--</h2>
+                        <p class="text-blue-600 dark:text-blue-300 font-medium" id="hero-date">--</p>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-2xl shadow-lg text-white">
+                        <span class="text-4xl" id="hero-icon">🌤️</span>
+                    </div>
+                </div>
+
+                <div class="flex items-baseline mb-6">
+                    <span class="text-7xl font-bold text-gray-900 dark:text-white tracking-tighter" id="hero-temp">--</span>
+                    <span class="text-4xl font-normal text-gray-600 dark:text-gray-300 align-top">°</span>
+                </div>
+
+                <div class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-8 px-4 py-2 bg-white/30 dark:bg-gray-700/30 rounded-xl inline-block" id="hero-desc">
+                    --
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center p-3 rounded-2xl bg-white/50 dark:bg-gray-700/50 hover:bg-white/70 transition-colors">
+                        <i data-lucide="droplets" class="w-6 h-6 text-blue-500 mx-auto mb-2"></i>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Độ ẩm</p>
+                        <p class="font-bold text-gray-800 dark:text-white" id="hero-humidity">--%</p>
+                    </div>
+                    <div class="text-center p-3 rounded-2xl bg-white/50 dark:bg-gray-700/50 hover:bg-white/70 transition-colors">
+                        <i data-lucide="wind" class="w-6 h-6 text-green-500 mx-auto mb-2"></i>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Gió</p>
+                        <p class="font-bold text-gray-800 dark:text-white" id="hero-wind">-- km/h</p>
+                    </div>
+                    <div class="text-center p-3 rounded-2xl bg-white/50 dark:bg-gray-700/50 hover:bg-white/70 transition-colors">
+                        <i data-lucide="sun" class="w-6 h-6 text-orange-500 mx-auto mb-2"></i>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">UV</p>
+                        <p class="font-bold text-gray-800 dark:text-white" id="hero-uv">--</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200/50 dark:border-gray-600/50 flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Cảm giác như <span id="hero-feels-like" class="font-bold text-gray-700 dark:text-gray-300">--°</span></span>
+                    <a id="hero-link" href="#" class="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Chi tiết <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mb-12">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Thành phố lớn</h2>
+            <a href="#" class="text-blue-600 dark:text-blue-400 font-medium hover:underline">Xem tất cả</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="city-grid">
+            {% for i in range(4) %}
+            <div class="bg-white/50 h-48 rounded-3xl animate-pulse"></div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
 <style>
-    .hero-section {
-        background: linear-gradient(to bottom, #38bdf8, #7dd3fc, #bae6fd);
-        min-height: 500px;
-        position: relative;
+    @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
+    .animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
     
-    .weather-card-main {
-        backdrop-filter: blur(10px);
-        background: rgba(255, 255, 255, 0.95);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        animation: slideUp 0.8s ease-out;
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
     }
-    
-    .weather-card-main:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    }
-    
-    .city-card {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-        animation: popIn 0.6s ease-out;
-    }
-    
-    .city-card:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    
-    .city-card.blue {
-        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-    }
-    
-    .city-card.orange {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    }
-    
-    .city-card.green {
-        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-    }
-    
-    .city-card.purple {
-        background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
-    }
-    
-    .search-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-    }
-    
-    .search-container:focus-within {
-        box-shadow: 0 8px 30px rgba(56, 189, 248, 0.2);
-        transform: translateY(-2px);
-    }
-    
-    .current-details {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 1rem;
-    }
-    
-    .detail-card {
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 0.75rem;
-        padding: 1rem;
-        text-align: center;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    }
-    
-    .detail-icon {
-        width: 32px;
-        height: 32px;
-        margin: 0 auto 0.5rem;
-    }
-    
-    .detail-value {
-        font-weight: 600;
-    }
-    
-    .detail-label {
-        font-size: 0.75rem;
-        color: #64748b;
-    }
-    
-    @keyframes slideUp {
-        from { transform: translateY(20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-    
-    @keyframes popIn {
-        from { transform: scale(0.9); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
+    .animate-blob { animation: blob 7s infinite; }
+    .animation-delay-2000 { animation-delay: 2s; }
 </style>
 {% endblock %}
 
-{% block content %}
-<!-- Hero Section -->
-<section class="hero-section py-16 text-center relative">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white/20 dark:to-gray-900/20"></div>
-    <div class="container mx-auto px-4 relative">
-        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">Thời tiết Việt Nam</h1>
-        <p class="text-lg text-white/90 mb-8 max-w-xl mx-auto drop-shadow-md">Cập nhật thông tin thời tiết chính xác và dự báo đáng tin cậy cho mọi tỉnh thành.</p>
-
-        <!-- User Weather Card -->
-        <div id="user-weather-card" class="weather-card-main p-6 max-w-md mx-auto mb-8 hidden">
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h2 id="user-province" class="text-2xl font-bold text-blue-900 dark:text-blue-100"></h2>
-                    <p id="user-time" class="text-sm text-blue-600 dark:text-blue-300"></p>
-                </div>
-                <i data-lucide="sun" class="w-12 h-12 text-yellow-500"></i>
-            </div>
-            <p class="text-4xl font-bold text-blue-900 dark:text-blue-100 mb-2" id="user-avg-temp"></p>
-            <p class="text-blue-600 dark:text-blue-300 mb-4">Nắng ít mây</p>
-            <div class="current-details">
-                <div class="detail-card">
-                    <i data-lucide="droplet" class="detail-icon text-blue-500"></i>
-                    <p class="detail-value" id="user-humidity"></p>
-                    <p class="detail-label">Độ ẩm</p>
-                </div>
-                <div class="detail-card">
-                    <i data-lucide="wind" class="detail-icon text-blue-500"></i>
-                    <p class="detail-value" id="user-wind">12 km/h</p>
-                    <p class="detail-label">Gió</p>
-                </div>
-                <div class="detail-card">
-                    <i data-lucide="cloud-rain" class="detail-icon text-blue-500"></i>
-                    <p class="detail-value" id="user-precipitation"></p>
-                    <p class="detail-label">Mưa</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Default Weather Card -->
-        <div id="default-weather-card" class="weather-card-main p-6 max-w-md mx-auto mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-blue-900 dark:text-blue-100">Hà Nội</h2>
-                    <p class="text-sm text-blue-600 dark:text-blue-300">Thứ Ba, 04/11/2025 • 20:32</p>
-                </div>
-                <i data-lucide="sun" class="w-12 h-12 text-yellow-500"></i>
-            </div>
-            <p class="text-4xl font-bold text-blue-900 dark:text-blue-100 mb-2">28°C</p>
-            <p class="text-blue-600 dark:text-blue-300 mb-4">Nắng ít mây</p>
-            <div class="current-details">
-                <div class="detail-card">
-                    <i data-lucide="droplet" class="detail-icon text-blue-500"></i>
-                    <p class="detail-value">65%</p>
-                    <p class="detail-label">Độ ẩm</p>
-                </div>
-                <div class="detail-card">
-                    <i data-lucide="wind" class="detail-icon text-blue-500"></i>
-                    <p class="detail-value">12 km/h</p>
-                    <p class="detail-label">Gió</p>
-                </div>
-                <div class="detail-card">
-                    <i data-lucide="cloud-rain" class="detail-icon text-blue-500"></i>
-                    <p class="detail-value">0 mm</p>
-                    <p class="detail-label">Mưa</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="max-w-md mx-auto mb-12">
-            <form action="/forecast" class="search-container flex rounded-lg overflow-hidden">
-                <input type="text" name="province" placeholder="Tìm tỉnh thành..." class="flex-1 p-3 text-blue-900 dark:text-blue-100 bg-transparent focus:outline-none">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-3 hover:bg-blue-600 transition-colors duration-200">
-                    <i data-lucide="search" class="w-5 h-5"></i>
-                </button>
-            </form>
-        </div>
-    </div>
-</section>
-
-<!-- Thành phố lớn -->
-<section class="py-16 bg-white/50 dark:bg-gray-900/50">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-blue-900 dark:text-blue-100 mb-8 text-center">Thời tiết các thành phố lớn</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="city-card blue p-6 rounded-xl" onclick="window.location.href='/forecast?province=Hà Nội'">
-                <h3 class="text-xl font-semibold mb-2">Hà Nội</h3>
-                <i data-lucide="sun" class="w-12 h-12 text-yellow-500 mx-auto mb-2"></i>
-                <p class="text-2xl font-bold">28°C</p>
-            </div>
-            <div class="city-card orange p-6 rounded-xl" onclick="window.location.href='/forecast?province=TP.HCM'">
-                <h3 class="text-xl font-semibold mb-2">TP. HCM</h3>
-                <i data-lucide="cloud" class="w-12 h-12 text-gray-500 mx-auto mb-2"></i>
-                <p class="text-2xl font-bold">31°C</p>
-            </div>
-            <div class="city-card green p-6 rounded-xl" onclick="window.location.href='/forecast?province=Đà Nẵng'">
-                <h3 class="text-xl font-semibold mb-2">Đà Nẵng</h3>
-                <i data-lucide="cloud-drizzle" class="w-12 h-12 text-blue-500 mx-auto mb-2"></i>
-                <p class="text-2xl font-bold">26°C</p>
-            </div>
-            <div class="city-card purple p-6 rounded-xl" onclick="window.location.href='/forecast?province=Cần Thơ'">
-                <h3 class="text-xl font-semibold mb-2">Cần Thơ</h3>
-                <i data-lucide="cloud" class="w-12 h-12 text-gray-500 mx-auto mb-2"></i>
-                <p class="text-2xl font-bold">30°C</p>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
-
 {% block scripts %}
+<script src="https://unpkg.com/lucide@latest"></script>
 <script>
-    function getUserLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                
-                const geoResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`);
-                const geoData = await geoResponse.json();
-                const province = geoData.address?.state || 'Hà Nội';
-                
-                const weatherResponse = await fetch(`/api/current_weather?province=${province}`);
-                const weatherData = await weatherResponse.json();
-                
-                if (!weatherData.error) {
-                    document.getElementById('user-province').textContent = province;
-                    document.getElementById('user-time').textContent = 'Thứ Ba, 04/11/2025 • 20:32';
-                    document.getElementById('user-avg-temp').textContent = `${weatherData.avg_temp}°C`;
-                    document.getElementById('user-humidity').textContent = `Độ ẩm ${weatherData.avg_humidity}%`;
-                    document.getElementById('user-precipitation').textContent = `Mưa ${weatherData.precipitation}mm`;
-                    document.getElementById('user-weather-card').classList.remove('hidden');
-                    document.getElementById('default-weather-card').classList.add('hidden');
-                }
-            }, () => {
-                loadDefaultWeather('Hà Nội');
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        initHomePage();
+    });
+
+    const WEATHER_ICONS = {
+        0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 
+        45: '🌫️', 48: '🌫️', 51: '🌦️', 53: '🌦️', 
+        55: '🌧️', 61: '🌧️', 63: '🌧️', 65: '⛈️', 
+        71: '❄️', 73: '❄️', 75: '🌨️', 95: '⛈️', 
+        96: '⛈️', 99: '⛈️'
+    };
+
+    const WEATHER_DESC = {
+        0: 'Trời quang', 1: 'Ít mây', 2: 'Mây rải rác', 3: 'Nhiều mây',
+        45: 'Sương mù', 51: 'Mưa phùn', 61: 'Mưa nhẹ', 63: 'Mưa vừa',
+        65: 'Mưa to', 95: 'Giông bão'
+    };
+
+    async function initHomePage() {
+        // 1. Load Provinces for Search
+        await loadProvinceList();
+
+        // 2. Load Major Cities
+        loadMajorCities(['Hà Nội', 'TP. Hồ Chí Minh', 'Đà Nẵng', 'Cần Thơ']);
+
+        // 3. Auto Detect Location & Load Hero Card
+        await detectUserLocation();
+        
+        // 4. Handle Search
+        setupSearch();
+    }
+
+    // --- SEARCH LOGIC ---
+    async function loadProvinceList() {
+        try {
+            const response = await fetch('/api/provinces');
+            const provinces = await response.json();
+            const datalist = document.getElementById('province-list');
+            provinces.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.name;
+                datalist.appendChild(option);
             });
-        } else {
-            loadDefaultWeather('Hà Nội');
+            window.allProvinces = provinces; // Store for distance calc
+        } catch (e) {
+            console.error("Failed to load provinces", e);
         }
     }
-    
-    async function loadDefaultWeather(province) {
-        const weatherResponse = await fetch(`/api/current_weather?province=${province}`);
-        const weatherData = await weatherResponse.json();
-        if (!weatherData.error) {
-            document.getElementById('user-province').textContent = province;
-            document.getElementById('user-time').textContent = 'Thứ Ba, 04/11/2025 • 20:32';
-            document.getElementById('user-avg-temp').textContent = `${weatherData.avg_temp}°C`;
-            document.getElementById('user-humidity').textContent = `Độ ẩm ${weatherData.avg_humidity}%`;
-            document.getElementById('user-precipitation').textContent = `Mưa ${weatherData.precipitation}mm`;
-            document.getElementById('user-weather-card').classList.remove('hidden');
-            document.getElementById('default-weather-card').classList.add('hidden');
+
+    function setupSearch() {
+        const input = document.getElementById('province-search');
+        const btn = document.getElementById('search-btn');
+
+        const go = () => {
+            if(input.value) window.location.href = `/forecast?province=${encodeURIComponent(input.value)}`;
+        };
+
+        btn.addEventListener('click', go);
+        input.addEventListener('keypress', (e) => { if(e.key === 'Enter') go(); });
+    }
+
+    // --- GEOLOCATION LOGIC (Reused from forecast.html) ---
+    async function detectUserLocation() {
+        const statusSpan = document.getElementById('location-status');
+        
+        if (!navigator.geolocation) {
+            statusSpan.textContent = "Trình duyệt không hỗ trợ định vị.";
+            loadHeroWeather('Hà Nội'); // Fallback
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                try {
+                    statusSpan.textContent = "Đã tìm thấy vị trí của bạn!";
+                    const { latitude, longitude } = position.coords;
+                    
+                    if (!window.allProvinces) {
+                         const res = await fetch('/api/provinces');
+                         window.allProvinces = await res.json();
+                    }
+
+                    // Find nearest province
+                    let nearest = null;
+                    let minDist = Infinity;
+                    window.allProvinces.forEach(p => {
+                        const d = calculateDistance(latitude, longitude, p.latitude, p.longitude);
+                        if(d < minDist) { minDist = d; nearest = p; }
+                    });
+
+                    if(nearest) {
+                        statusSpan.innerHTML = `<span class="text-green-600">📍 Bạn đang ở gần ${nearest.name}</span>`;
+                        loadHeroWeather(nearest.name);
+                    } else {
+                        loadHeroWeather('Hà Nội');
+                    }
+                } catch(e) {
+                    console.error(e);
+                    loadHeroWeather('Hà Nội');
+                }
+            },
+            () => {
+                statusSpan.textContent = "Không thể lấy vị trí. Hiển thị mặc định.";
+                loadHeroWeather('Hà Nội');
+            }
+        );
+    }
+
+    // --- WEATHER LOADING LOGIC ---
+    async function loadHeroWeather(province) {
+        const card = document.getElementById('hero-card');
+        const loader = document.getElementById('hero-loading');
+        
+        try {
+            const res = await fetch(`/api/forecast?province=${encodeURIComponent(province)}&days=1`);
+            const data = await res.json();
+            const current = data.current;
+
+            // Render Hero Data
+            document.getElementById('hero-location').textContent = province;
+            document.getElementById('hero-date').textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit' });
+            
+            document.getElementById('hero-temp').textContent = Math.round(current.temperature_2m);
+            document.getElementById('hero-icon').textContent = WEATHER_ICONS[current.weather_code] || '🌤️';
+            document.getElementById('hero-desc').textContent = WEATHER_DESC[current.weather_code] || 'Không xác định';
+            
+            document.getElementById('hero-humidity').textContent = `${current.relative_humidity_2m}%`;
+            document.getElementById('hero-wind').textContent = `${current.wind_speed_10m} km/h`;
+            document.getElementById('hero-uv').textContent = current.uv_index;
+            document.getElementById('hero-feels-like').textContent = `${Math.round(current.apparent_temperature)}°`;
+            
+            document.getElementById('hero-link').href = `/forecast?province=${encodeURIComponent(province)}`;
+            
+            // Click card to go to details
+            card.onclick = (e) => {
+                if(e.target.tagName !== 'A') window.location.href = `/forecast?province=${encodeURIComponent(province)}`;
+            }
+
+        } catch (e) {
+            console.error("Hero load error", e);
+        } finally {
+            loader.classList.add('hidden');
         }
     }
-    
-    getUserLocation();
+
+    async function loadMajorCities(cities) {
+        const container = document.getElementById('city-grid');
+        container.innerHTML = ''; // Clear skeletons
+
+        const gradients = [
+            'from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/40',
+            'from-orange-100 to-amber-200 dark:from-orange-900/40 dark:to-amber-800/40',
+            'from-green-100 to-emerald-200 dark:from-green-900/40 dark:to-emerald-800/40',
+            'from-purple-100 to-pink-200 dark:from-purple-900/40 dark:to-pink-800/40'
+        ];
+
+        for (let i = 0; i < cities.length; i++) {
+            const city = cities[i];
+            const bgClass = gradients[i % gradients.length];
+            
+            // Create Card Structure (Skeleton first or direct render)
+            const div = document.createElement('div');
+            div.className = `relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br ${bgClass} border border-white/20 shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-[1.03] hover:shadow-xl group`;
+            div.onclick = () => window.location.href = `/forecast?province=${encodeURIComponent(city)}`;
+            
+            div.innerHTML = `
+                <div class="absolute top-0 right-0 p-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-gray-700 dark:text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-1">${city}</h3>
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-xs font-medium px-2 py-1 bg-white/40 rounded-lg text-gray-700 dark:text-gray-200" id="desc-${i}">Đang tải...</span>
+                </div>
+                <div class="flex items-end justify-between">
+                    <div>
+                        <span class="text-4xl font-bold text-gray-800 dark:text-white" id="temp-${i}">--</span>
+                        <span class="text-2xl text-gray-600 dark:text-gray-300">°</span>
+                    </div>
+                    <div class="text-5xl mb-1 transform group-hover:scale-110 transition-transform duration-300" id="icon-${i}">
+                        ⏳
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+
+            // Fetch Data
+            fetch(`/api/forecast?province=${encodeURIComponent(city)}&days=1`)
+                .then(res => res.json())
+                .then(data => {
+                    const c = data.current;
+                    document.getElementById(`temp-${i}`).textContent = Math.round(c.temperature_2m);
+                    document.getElementById(`desc-${i}`).textContent = WEATHER_DESC[c.weather_code] || 'N/A';
+                    document.getElementById(`icon-${i}`).textContent = WEATHER_ICONS[c.weather_code] || '🌤️';
+                })
+                .catch(err => console.error(err));
+        }
+        lucide.createIcons();
+    }
+
+    // Helper: Haversine Formula
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
 </script>
 {% endblock %}

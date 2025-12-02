@@ -21,35 +21,32 @@ import numpy as np
 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from data_pipeline.data_storage import connect_to_db
+from data_pipeline.data_forecast.data_storage import connect_to_db
 
 MODEL_DIR = os.path.join(os.path.dirname(__file__), 'models')
 MODEL_PATH = os.path.join(MODEL_DIR, 'weather_xgboost_multi.pkl')
 os.makedirs(MODEL_DIR, exist_ok=True)
 
-def load_data_for_training(conn, province_id=None, limit=500000):
+def load_data_for_training(conn, province_id=None, limit=200000):
     """
-    Load dữ liệu từ database để training
-    
-    Args:
-        province_id: Nếu None thì lấy tất cả tỉnh, nếu có giá trị thì chỉ lấy tỉnh đó
-        limit: Số lượng bản ghi tối đa
-    
-    Returns:
-        DataFrame với các cột từ bảng weather_data
+    Load dữ liệu từ database để training – tối ưu tránh timeout.
     """
-    # conn = connect_to_db()
-    
-    # Query dựa trên schema mới
+
+    # Tắt statement_timeout để tránh query bị kill
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SET statement_timeout = 0;")
+    except Exception as e:
+        print("⚠️ Không thể set statement_timeout:", e)
+
+    # Query (đã tối ưu: không ORDER BY nếu không cần thiết)
     base_query = """
         SELECT 
             timestamp,
             province_id,
-            -- Nhiệt độ & độ ẩm
             temperature_2m,
             apparent_temperature,
             relative_humidity_2m,
-            -- Lượng mưa & mây
             precipitation,
             rain,
             showers,
@@ -58,43 +55,42 @@ def load_data_for_training(conn, province_id=None, limit=500000):
             cloud_cover_mid,
             cloud_cover_high,
             weather_code,
-            -- Gió & áp suất
             wind_speed_10m,
             wind_direction_10m,
             wind_gusts_10m,
             pressure_msl,
-            -- Bức xạ & nắng
             shortwave_radiation,
             direct_radiation,
             uv_index,
             sunshine_duration
-        FROM weather_data 
-        WHERE temperature_2m IS NOT NULL 
-          AND pressure_msl IS NOT NULL
+        FROM weather_data
+        WHERE temperature_2m IS NOT NULL
+        AND pressure_msl IS NOT NULL
     """
-    
+
+    # Điều kiện lọc
+    params = []
     if province_id:
-        query = base_query + " AND province_id = %s ORDER BY timestamp DESC LIMIT %s"
-        df = pd.read_sql(query, conn, params=(province_id, limit))
-    else:
-        query = base_query + " ORDER BY timestamp DESC LIMIT %s"
-        df = pd.read_sql(query, conn, params=(limit,))
-    
-    conn.close()
-    print(f"✅ Đã tải {len(df)} bản ghi từ database")
-    
-    # Kiểm tra dữ liệu
+        base_query += " AND province_id = %s"
+        params.append(province_id)
+
+    # Order theo timestamp DESC để lấy dữ liệu mới nhất
+    final_query = base_query + " ORDER BY timestamp DESC LIMIT %s"
+    params.append(limit)
+
+    print("⏳ Đang chạy query, vui lòng đợi...")
+    df = pd.read_sql(final_query, conn, params=params)
+
+    print(f"✅ Đã tải {len(df)} bản ghi.")
+
     if len(df) == 0:
-        print("⚠️  Không có dữ liệu trong database!")
+        print("⚠️  Không có dữ liệu!")
         return None
-    
-    # Hiển thị thông tin về dữ liệu
-    print(f"\n📊 Thông tin dữ liệu:")
-    print(f"   • Khoảng thời gian: {df['timestamp'].min()} đến {df['timestamp'].max()}")
+
+    print(f"   • Khoảng thời gian: {df['timestamp'].min()} → {df['timestamp'].max()}")
     print(f"   • Số tỉnh: {df['province_id'].nunique()}")
-    print(f"   • Các cột có sẵn: {', '.join(df.columns.tolist())}")
-    
     return df
+
 
 def feature_engineering(df):
     """
